@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ジュエル・エレメンツ - 118の秘宝 v3</title>
+<style>
+:root {
+  --bg: #04080f;
+  --card: #0d1b2a;
+  --card2: #112240;
+  --accent: #00e5ff;
+  --text: #e2e8f0;
+  --dim: #64748b;
+}
+body.light {
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --card2: #e8edf5;
+  --accent: #0077aa;
+  --text: #1a202c;
+  --dim: #64748b;
+}
+body.light .el { border-color: #c8d6e8; }
+body.light .el.empty { background: #dde5ef; }
+body.light header::before { background: radial-gradient(ellipse, #0077aa18 0%, transparent 70%); }
+body.light .modal-box { background: linear-gradient(160deg,#fff 0%,#e8edf5 100%); }
+body.light .modal-info { background: rgba(0,0,0,0.06); }
+body.light .modal-desc { background: rgba(0,119,170,0.05); border-color: rgba(0,119,170,0.2); color:#334155; }
+body.light .music-bar { background: rgba(0,119,170,0.06); border-color: rgba(0,119,170,0.2); }
+body.light .search-input, body.light .filter-btn { background:#fff; border-color:#c8d6e8; color:var(--text); }
+body.light .top-bar-bg { background: rgba(240,244,248,0.92); border-color:#c8d6e8; }
+body.light .today-box { background:#fff; border-color:#c8d6e8; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* Stars background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, #ffffff22 0%, transparent 100%),
+    radial-gradient(1px 1px at 80% 10%, #ffffff18 0%, transparent 100%),
+    radial-gradient(1px 1px at 50% 60%, #ffffff15 0%, transparent 100%),
+    radial-gradient(1px 1px at 10% 80%, #ffffff20 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 70%, #ffffff12 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+header {
+  text-align: center;
+  padding: 32px 20px 12px;
+  position: relative;
+  z-index: 1;
+}
+header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 700px; height: 220px;
+  background: radial-gradient(ellipse, #00e5ff14 0%, transparent 70%);
+  pointer-events: none;
+}
+h1 {
+  font-size: 2em;
+  font-weight: 200;
+  letter-spacing: 10px;
+  color: var(--accent);
+  text-shadow: 0 0 30px var(--accent), 0 0 60px #00e5ff44;
+  margin-bottom: 6px;
+}
+.subtitle { color: var(--dim); font-size: 0.82em; letter-spacing: 2px; }
+
+.legend {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 6px; padding: 16px 16px 8px;
+  position: relative; z-index: 1;
+}
+.legend-item {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 0.7em; color: var(--dim);
+}
+.legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+.table-wrap { overflow-x: auto; padding: 0 12px 24px; position: relative; z-index: 1; }
+.periodic-table {
+  display: grid;
+  grid-template-columns: repeat(18, 46px);
+  gap: 3px;
+  min-width: 860px;
+  margin: 0 auto;
+}
+.el {
+  width: 46px; height: 56px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: 1px solid #1e3a5f;
+  position: relative;
+  overflow: hidden;
+}
+.el::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 55%);
+  pointer-events: none;
+}
+.el:hover {
+  transform: scale(1.35);
+  z-index: 100;
+}
+.el .num { font-size: 0.5em; color: rgba(255,255,255,0.4); line-height: 1.2; }
+.el .sym { font-weight: 700; font-size: 1.05em; line-height: 1.1; }
+.el.empty { background: #0a1520; opacity: 0.15; cursor: default; }
+.el.empty:hover { transform: none; box-shadow: none; }
+.el.spacer { opacity: 0; cursor: default; height: 12px; }
+
+/* Category colors */
+.cat-alkali     { background: #1a0a2e; color: #c084fc; border-color: #6d28d9; }
+.cat-alkali:hover { box-shadow: 0 0 18px #c084fc88; }
+.cat-alkaline   { background: #071a0e; color: #4ade80; border-color: #166534; }
+.cat-alkaline:hover { box-shadow: 0 0 18px #4ade8088; }
+.cat-transition { background: #070d1e; color: #60a5fa; border-color: #1d4ed8; }
+.cat-transition:hover { box-shadow: 0 0 18px #60a5fa88; }
+.cat-post       { background: #1a160a; color: #facc15; border-color: #854d0e; }
+.cat-post:hover { box-shadow: 0 0 18px #facc1588; }
+.cat-metalloid  { background: #071a1a; color: #2dd4bf; border-color: #0f766e; }
+.cat-metalloid:hover { box-shadow: 0 0 18px #2dd4bf88; }
+.cat-nonmetal   { background: #1a0909; color: #f87171; border-color: #991b1b; }
+.cat-nonmetal:hover { box-shadow: 0 0 18px #f8717188; }
+.cat-halogen    { background: #180a14; color: #f472b6; border-color: #9d174d; }
+.cat-halogen:hover { box-shadow: 0 0 18px #f472b688; }
+.cat-noble      { background: #08081a; color: #818cf8; border-color: #3730a3; }
+.cat-noble:hover { box-shadow: 0 0 18px #818cf888; }
+.cat-lanthanide { background: #1a100a; color: #fb923c; border-color: #9a3412; }
+.cat-lanthanide:hover { box-shadow: 0 0 18px #fb923c88; }
+.cat-actinide   { background: #071a12; color: #34d399; border-color: #065f46; }
+.cat-actinide:hover { box-shadow: 0 0 18px #34d39988; }
+
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(10px);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.modal.open { display: flex; }
+.modal-box {
+  background: linear-gradient(160deg, #0d1b2a 0%, #0a1628 100%);
+  border: 1px solid var(--accent);
+  border-radius: 22px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 60px #00e5ff22, 0 20px 60px rgba(0,0,0,0.7);
+  animation: pop 0.28s cubic-bezier(0.34,1.56,0.64,1);
+}
+.modal-box::-webkit-scrollbar { width: 4px; }
+.modal-box::-webkit-scrollbar-track { background: transparent; }
+.modal-box::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 2px; }
+@keyframes pop { from { transform: scale(0.78); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.modal-header {
+  padding: 20px 22px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-num-badge {
+  background: rgba(0,229,255,0.1);
+  border: 1px solid rgba(0,229,255,0.3);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.78em;
+  color: var(--accent);
+  letter-spacing: 2px;
+}
+.close-btn {
+  background: rgba(255,255,255,0.06); border: 1px solid #1e3a5f;
+  color: var(--dim); width: 32px; height: 32px;
+  border-radius: 50%; font-size: 1.2em; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.close-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+.modal-illust {
+  width: 100%; height: 150px;
+  display: flex; justify-content: center; align-items: center;
+  padding: 10px 16px;
+}
+
+.modal-center { text-align: center; padding: 0 22px 14px; }
+.modal-sym {
+  font-size: 4.8em; font-weight: 800; line-height: 1;
+  background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 18px var(--accent));
+}
+.modal-name-ja { font-size: 1.55em; margin: 6px 0 3px; font-weight: 300; }
+.modal-name-en {
+  font-size: 0.82em; color: var(--accent);
+  letter-spacing: 3px; text-transform: uppercase;
+  opacity: 0.8;
+}
+.modal-cat {
+  display: inline-block; margin-top: 10px;
+  padding: 3px 14px; border-radius: 20px;
+  font-size: 0.7em; border: 1px solid;
+}
+
+.modal-info {
+  margin: 14px 22px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 0.83em;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.info-item { display: flex; flex-direction: column; gap: 3px; }
+.info-label { color: var(--dim); font-size: 0.76em; letter-spacing: 0.5px; }
+.info-val { color: var(--text); }
+
+.music-bar {
+  margin: 0 22px 14px;
+  background: rgba(0,229,255,0.05);
+  border: 1px solid rgba(0,229,255,0.15);
+  border-radius: 30px;
+  padding: 8px 16px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.78em; color: var(--dim);
+}
+.music-note { font-size: 1.2em; color: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1; transform:scale(1)} 50%{opacity:0.5; transform:scale(0.9)} }
+.music-label { flex: 1; color: #94a3b8; }
+.music-stop {
+  background: rgba(255,255,255,0.08); border: 1px solid #1e3a5f;
+  color: var(--dim); cursor: pointer; font-size: 0.85em;
+  padding: 3px 9px; border-radius: 10px; transition: all 0.2s;
+}
+.music-stop:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+.modal-desc {
+  margin: 0 22px 22px;
+  padding: 14px 16px;
+  background: rgba(0,229,255,0.04);
+  border: 1px solid rgba(0,229,255,0.12);
+  border-radius: 12px;
+  font-size: 0.85em;
+  line-height: 1.75;
+  color: #b0bec5;
+}
+.modal-desc strong { color: var(--accent); display: block; margin-bottom: 6px; }
+
+.lan-label {
+  text-align: center;
+  font-size: 0.65em;
+  color: var(--dim);
+  letter-spacing: 1px;
+  margin: 6px 0 2px;
+  grid-column: 1 / -1;
+}
+
+/* TOP BAR */
+.top-bar {
+  position: relative; z-index: 2;
+  display: flex; flex-wrap: wrap;
+  justify-content: center; align-items: center;
+  gap: 10px; padding: 10px 16px;
+}
+.top-bar-bg {
+  background: rgba(4,8,15,0.85);
+  border: 1px solid #1e3a5f;
+  border-radius: 40px;
+  display: flex; flex-wrap: wrap;
+  align-items: center; gap: 8px;
+  padding: 8px 14px;
+  backdrop-filter: blur(8px);
+}
+.search-input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid #1e3a5f;
+  border-radius: 20px;
+  padding: 6px 14px;
+  color: var(--text);
+  font-size: 0.82em;
+  width: 200px; outline: none;
+  transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--accent); }
+.filter-btn {
+  padding: 4px 12px; border-radius: 16px;
+  border: 1px solid #1e3a5f;
+  background: transparent; color: var(--dim);
+  font-size: 0.72em; cursor: pointer;
+  transition: all 0.18s; white-space: nowrap;
+}
+.filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+.filter-btn.active { color: #000; font-weight: bold; }
+.theme-btn {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid #1e3a5f;
+  border-radius: 20px; padding: 5px 12px;
+  color: var(--dim); font-size: 0.8em;
+  cursor: pointer; transition: all 0.2s;
+}
+.theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* TODAY BOX */
+.today-box {
+  background: rgba(0,229,255,0.05);
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 14px;
+  padding: 10px 18px;
+  display: flex; align-items: center; gap: 14px;
+  margin: 0 auto 12px;
+  width: fit-content; cursor: pointer;
+  transition: all 0.2s; position: relative; z-index: 1;
+}
+.today-box:hover { background: rgba(0,229,255,0.1); border-color: var(--accent); }
+.today-sym { font-size: 2em; font-weight: 800; color: var(--accent); }
+.today-info { font-size: 0.8em; }
+.today-label { color: var(--dim); font-size: 0.72em; letter-spacing: 1px; }
+
+/* TOOLTIP */
+.el { position: relative; }
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px); left: 50%;
+  transform: translateX(-50%);
+  background: #0d1b2a;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 0.7em;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 200;
+  color: var(--text);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+.el:hover .tooltip { opacity: 1; }
+
+/* PERIOD LABELS */
+.period-labels {
+  display: flex; flex-direction: column;
+  justify-content: flex-start;
+  gap: 3px; padding-top: 0;
+  margin-right: 4px;
+}
+.period-label {
+  height: 56px; width: 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6em; color: var(--dim);
+}
+
+/* TABLE WRAP FLEX */
+.table-outer {
+  display: flex; justify-content: center;
+  align-items: flex-start;
+  overflow-x: auto; padding: 0 12px 24px;
+  position: relative; z-index: 1;
+}
+
+/* STATE BADGES in modal */
+.state-badge {
+  display: inline-block;
+  padding: 2px 10px; border-radius: 12px;
+  font-size: 0.7em; margin-left: 8px;
+  font-weight: 600;
+}
+.state-solid { background: rgba(96,165,250,0.2); color: #60a5fa; border: 1px solid #60a5fa44; }
+.state-liquid { background: rgba(248,113,113,0.2); color: #f87171; border: 1px solid #f8717144; }
+.state-gas { background: rgba(129,140,248,0.2); color: #818cf8; border: 1px solid #818cf844; }
+.state-syn { background: rgba(251,146,60,0.2); color: #fb923c; border: 1px solid #fb923c44; }
+
+/* USAGE TAGS */
+.tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 22px 14px; }
+.tag {
+  padding: 2px 10px; border-radius: 12px;
+  font-size: 0.68em;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid #1e3a5f;
+  color: var(--dim);
+}
+
+/* MODAL NAV */
+.modal-nav {
+  display: flex; justify-content: space-between;
+  padding: 0 22px 16px; gap: 8px;
+}
+.nav-btn {
+  flex: 1; background: rgba(255,255,255,0.05);
+  border: 1px solid #1e3a5f; border-radius: 10px;
+  padding: 8px; cursor: pointer; color: var(--dim);
+  font-size: 0.78em; transition: all 0.2s;
+  display: flex; align-items: center; gap: 6px;
+  justify-content: center;
+}
+.nav-btn:hover { border-color: var(--accent); color: var(--accent); }
+.nav-btn:disabled { opacity: 0.2; cursor: default; }
+
+/* PULSE */
+@keyframes elPulse {
+  0%,100% { box-shadow: none; }
+  50% { box-shadow: 0 0 12px currentColor; }
+}
+.el.pulse-anim { animation: elPulse 2s ease-in-out infinite; }
+
+/* TOP MUSIC BAR */
+.top-music-bar {
+  position: fixed; bottom: 16px; right: 16px;
+  background: rgba(4,8,15,0.9);
+  border: 1px solid rgba(0,229,255,0.3);
+  border-radius: 30px;
+  padding: 8px 16px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.75em; color: var(--dim);
+  z-index: 500; backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(0,229,255,0.1);
+}
+.top-music-bar .music-note { animation: pulse 1.5s ease-in-out infinite; color: var(--accent); }
+
+/* DIM filtered elements */
+.el.dimmed { opacity: 0.15; pointer-events: none; }
+
+/* SEARCH HIGHLIGHT */
+.el.highlight { ring: 2px solid white; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>𝒿𝓊𝓌𝑒𝓁 𝑒𝓁𝑒𝓂𝑒𝓃𝓉𝓈</h1>
+  <div class="subtitle">118の秘宝 — 元素をクリックして鑑定書をひらく</div>
+</header>
+
+<!-- Today's element -->
+<div class="today-box" id="todayBox" onclick="openTodayElement()">
+  <div class="today-sym" id="today-sym">?</div>
+  <div class="today-info">
+    <div class="today-label">✨ 今日の元素</div>
+    <div id="today-name" style="font-weight:600;color:var(--text)"></div>
+    <div id="today-en" style="font-size:0.75em;color:var(--accent)"></div>
+  </div>
+</div>
+
+<!-- Search + Filter + Theme bar -->
+<div class="top-bar">
+  <div class="top-bar-bg">
+    <input class="search-input" id="searchInput" placeholder="🔍 元素を検索（名前・記号・番号）" oninput="doSearch(this.value)">
+    <button class="theme-btn" onclick="toggleTheme()">🌙 ライト/ダーク</button>
+    <button class="filter-btn active" data-cat="all" onclick="setFilter('all',this)" style="color:var(--accent);border-color:var(--accent)">すべて</button>
+  </div>
+</div>
+<!-- Category filter buttons -->
+<div class="top-bar" style="padding-top:0">
+  <div class="top-bar-bg" id="catFilters"></div>
+</div>
+
+<div class="legend" id="legend"></div>
+<div class="table-outer">
+  <div class="period-labels" id="periodLabels"></div>
+  <div style="overflow-x:auto">
+    <div class="periodic-table" id="table"></div>
+  </div>
+</div>
+
+<!-- Top music bar (always visible) -->
+<div class="top-music-bar" id="topMusicBar">
+  <span class="music-note">♪</span>
+  <span id="top-music-label">TOP BGM 再生中...</span>
+  <button class="music-stop" onclick="stopTopMusic()" style="background:none;border:none;color:var(--dim);cursor:pointer;font-size:1em;">■</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal" onclick="handleModalBg(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div id="m-num" class="modal-num-badge"></div>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-illust" id="m-illust"></div>
+    <div class="modal-center">
+      <div id="m-sym" class="modal-sym"></div>
+      <div id="m-name-ja" class="modal-name-ja"></div>
+      <div id="m-name-en" class="modal-name-en"></div>
+      <div id="m-cat" class="modal-cat"></div>
+    </div>
+    <div class="modal-info">
+      <div class="info-item"><span class="info-label">📅 発見年</span><span class="info-val" id="m-year"></span></div>
+      <div class="info-item"><span class="info-label">👤 発見者</span><span class="info-val" id="m-person"></span></div>
+      <div class="info-item"><span class="info-label">📍 発見地</span><span class="info-val" id="m-place"></span></div>
+      <div class="info-item"><span class="info-label">⚖️ 原子量</span><span class="info-val" id="m-mass"></span></div>
+    </div>
+    <div class="music-bar">
+      <span class="music-note">♪</span>
+      <span class="music-label" id="m-music-label">Element Theme...</span>
+      <button class="music-stop" onclick="stopMusic()">■ 停止</button>
+    </div>
+    <div class="modal-desc">
+      <strong>🔬 元素のひみつ</strong>
+      <span id="m-desc"></span>
+    </div>
+    <div class="tags" id="m-tags"></div>
+    <div class="modal-nav">
+      <button class="nav-btn" id="nav-prev" onclick="navElement(-1)">← 前の元素</button>
+      <button class="nav-btn" id="nav-next" onclick="navElement(+1)">次の元素 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Audio ─────────────────────────────────────────────────────
+const AC = window.AudioContext || window.webkitAudioContext;
+let actx = null;
+let musicNodes = [];
+let topMusicNodes = [];
+
+function ctx() { if (!actx) actx = new AC(); return actx; }
+
+function playClick(freq1=900, freq2=450) {
+  const c = ctx();
+  const o = c.createOscillator(), g = c.createGain();
+  o.connect(g); g.connect(c.destination);
+  o.frequency.setValueAtTime(freq1, c.currentTime);
+  o.frequency.exponentialRampToValueAtTime(freq2, c.currentTime + 0.1);
+  g.gain.setValueAtTime(0.15, c.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.15);
+  o.start(); o.stop(c.currentTime + 0.15);
+}
+
+function stopMusic() {
+  musicNodes.forEach(n => { try { n.stop(); } catch(e){} });
+  musicNodes = [];
+}
+
+function stopTopMusic() {
+  topMusicNodes.forEach(n => { try { n.stop(); } catch(e){} });
+  topMusicNodes = [];
+  document.getElementById('topMusicBar').style.opacity = '0.3';
+}
+
+// Group-specific music parameters: [scale, waveform, tempo, octave, label]
+const CAT_MUSIC = {
+  'cat-alkali':     { scale:[261.63,293.66,329.63,392,440,523.25], wave:'sawtooth', tempo:0.28, oct:1,   label:'アルカリ金属 — 激しいビート' },
+  'cat-alkaline':   { scale:[293.66,329.63,369.99,415.30,493.88,587.33], wave:'triangle', tempo:0.38, oct:1, label:'アルカリ土類 — 穏やかな響き' },
+  'cat-transition': { scale:[277.18,311.13,369.99,440,554.37,622.25], wave:'square', tempo:0.25, oct:1,   label:'遷移金属 — 力強いリズム' },
+  'cat-post':       { scale:[329.63,369.99,392,440,493.88,554.37], wave:'sine', tempo:0.35, oct:1,       label:'後遷移金属 — 柔らかい音色' },
+  'cat-metalloid':  { scale:[311.13,349.23,392,440,466.16,523.25], wave:'triangle', tempo:0.32, oct:1,   label:'半金属 — ミステリアスな音' },
+  'cat-nonmetal':   { scale:[349.23,392,440,493.88,523.25,587.33], wave:'sine', tempo:0.3, oct:1,        label:'非金属 — 透明な調べ' },
+  'cat-halogen':    { scale:[369.99,415.30,466.16,523.25,554.37,622.25], wave:'sawtooth', tempo:0.27, oct:1, label:'ハロゲン — 鋭いトーン' },
+  'cat-noble':      { scale:[392,440,493.88,523.25,587.33,659.25], wave:'sine', tempo:0.45, oct:1,       label:'希ガス — 静かな浮遊感' },
+  'cat-lanthanide': { scale:[261.63,293.66,349.23,392,440,466.16], wave:'triangle', tempo:0.4, oct:0.5,  label:'ランタノイド — 神秘的な旋律' },
+  'cat-actinide':   { scale:[220,246.94,261.63,293.66,329.63,369.99], wave:'square', tempo:0.35, oct:0.5, label:'アクチノイド — 深く重い音' },
+};
+
+function playCategoryMusic(cat) {
+  stopMusic();
+  const c = ctx();
+  const cfg = CAT_MUSIC[cat] || CAT_MUSIC['cat-transition'];
+  const { scale, wave, tempo, oct } = cfg;
+  const melody = [];
+  for (let i = 0; i < 12; i++) {
+    const base = scale[Math.floor(Math.random() * scale.length)];
+    melody.push(base * oct);
+  }
+  melody.forEach((freq, i) => {
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = wave;
+    o.frequency.value = freq;
+    o.connect(g); g.connect(c.destination);
+    const t = c.currentTime + i * tempo + 0.15;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.07, t + 0.04);
+    g.gain.exponentialRampToValueAtTime(0.001, t + tempo * 0.88);
+    o.start(t); o.stop(t + tempo);
+    musicNodes.push(o);
+  });
+  // Ambient pad
+  const pad = c.createOscillator(), padG = c.createGain();
+  pad.type = 'sine';
+  pad.frequency.value = scale[0] * oct * 0.5;
+  pad.connect(padG); padG.connect(c.destination);
+  padG.gain.setValueAtTime(0.022, c.currentTime);
+  pad.start();
+  musicNodes.push(pad);
+  setTimeout(() => { try { pad.stop(); } catch(e){} }, (melody.length * tempo + 1.8) * 1000);
+}
+
+// TOP BGM: ambient, ethereal, looping-style
+function playTopBGM() {
+  const c = ctx();
+  stopTopMusic();
+  const notes = [261.63, 293.66, 329.63, 392, 440, 349.23, 329.63, 293.66];
+  const tempo = 0.55;
+  function playLoop(startTime) {
+    notes.forEach((freq, i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq * 0.5;
+      o.connect(g); g.connect(c.destination);
+      const t = startTime + i * tempo;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.05, t + 0.1);
+      g.gain.exponentialRampToValueAtTime(0.001, t + tempo * 0.9);
+      o.start(t); o.stop(t + tempo);
+      topMusicNodes.push(o);
+    });
+    // High harmony
+    [523.25, 587.33, 659.25, 698.46].forEach((freq, i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'triangle';
+      o.frequency.value = freq;
+      o.connect(g); g.connect(c.destination);
+      const t = startTime + i * tempo * 2;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.03, t + 0.12);
+      g.gain.exponentialRampToValueAtTime(0.001, t + tempo * 1.8);
+      o.start(t); o.stop(t + tempo * 2);
+      topMusicNodes.push(o);
+    });
+    // Schedule next loop
+    const loopDuration = notes.length * tempo;
+    setTimeout(() => {
+      if (topMusicNodes.length > 0) playLoop(c.currentTime + 0.05);
+    }, (loopDuration - 0.2) * 1000);
+  }
+  playLoop(c.currentTime);
+  document.getElementById('topMusicBar').style.opacity = '1';
+}
+
+// Start top BGM on first user interaction
+let topBGMStarted = false;
+document.addEventListener('click', () => {
+  if (!topBGMStarted) { topBGMStarted = true; playTopBGM(); }
+}, { once: false });
+
+// ── Illustrations ─────────────────────────────────────────────
+const CAT_COLORS = {
+  'cat-alkali':'#c084fc','cat-alkaline':'#4ade80','cat-transition':'#60a5fa',
+  'cat-post':'#facc15','cat-metalloid':'#2dd4bf','cat-nonmetal':'#f87171',
+  'cat-halogen':'#f472b6','cat-noble':'#818cf8','cat-lanthanide':'#fb923c','cat-actinide':'#34d399'
+};
+
+function getIllust(n, sym, cat) {
+  const c = CAT_COLORS[cat] || '#00e5ff';
+  const specials = {
+    1: `<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="8" fill="${c}"/>
+      <g><circle cx="60" cy="60" r="32" fill="none" stroke="${c}" stroke-width="1.5" opacity="0.7"/>
+      <circle cx="92" cy="60" r="7" fill="#f87171"/>
+      <animateTransform attributeName="transform" type="rotate" from="0 60 60" to="360 60 60" dur="2.5s" repeatCount="indefinite"/></g>
+      <circle cx="60" cy="60" r="8" fill="${c}"/></svg>`,
+    2: `<svg viewBox="0 0 120 120">
+      <ellipse cx="60" cy="60" rx="36" ry="14" fill="none" stroke="${c}" stroke-width="1.5" opacity="0.8"/>
+      <ellipse cx="60" cy="60" rx="36" ry="14" fill="none" stroke="${c}" stroke-width="1.5" opacity="0.8" transform="rotate(60 60 60)"/>
+      <ellipse cx="60" cy="60" rx="36" ry="14" fill="none" stroke="${c}" stroke-width="1.5" opacity="0.8" transform="rotate(120 60 60)"/>
+      <circle cx="60" cy="60" r="7" fill="${c}"/></svg>`,
+    6: `<svg viewBox="0 0 120 120">
+      <polygon points="60,18 97,82 23,82" fill="none" stroke="#f87171" stroke-width="2"/>
+      <circle cx="60" cy="18" r="5" fill="#fff"/><circle cx="97" cy="82" r="5" fill="#fff"/><circle cx="23" cy="82" r="5" fill="#fff"/>
+      <text x="60" y="68" text-anchor="middle" fill="#f87171" font-size="20" font-weight="bold">◆</text></svg>`,
+    8: `<svg viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="38" fill="none" stroke="${c}" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <circle cx="60" cy="60" r="22" fill="${c}" opacity="0.15"/>
+      <path d="M40,55 Q60,30 80,55 Q60,80 40,55Z" fill="${c}" opacity="0.7"/>
+      <circle cx="60" cy="60" r="5" fill="#fff" opacity="0.5"/></svg>`,
+    26: `<svg viewBox="0 0 120 120">
+      <rect x="28" y="32" width="64" height="56" rx="5" fill="${c}" opacity="0.12" stroke="${c}" stroke-width="1.5"/>
+      <line x1="60" y1="32" x2="60" y2="88" stroke="${c}" stroke-width="1" opacity="0.4"/>
+      <line x1="28" y1="60" x2="92" y2="60" stroke="${c}" stroke-width="1" opacity="0.4"/>
+      <circle cx="60" cy="60" r="10" fill="${c}" opacity="0.5"/>
+      <circle cx="60" cy="60" r="4" fill="${c}"/></svg>`,
+    47: `<svg viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="38" fill="#e2e8f0" opacity="0.08" stroke="#e2e8f0" stroke-width="2"/>
+      <circle cx="60" cy="60" r="22" fill="#e2e8f0" opacity="0.12"/>
+      <path d="M60,22 L70,54 L104,54 L77,74 L88,106 L60,86 L32,106 L43,74 L16,54 L50,54Z" fill="#e2e8f0" opacity="0.5"/>
+      <circle cx="60" cy="60" r="6" fill="#fff" opacity="0.8"/></svg>`,
+    79: `<svg viewBox="0 0 120 120">
+      <path d="M60,14 L72,46 L106,46 L79,66 L89,98 L60,78 L31,98 L41,66 L14,46 L48,46Z" fill="#ffd700" opacity="0.85"/>
+      <path d="M60,26 L69,50 L95,50 L74,64 L82,88 L60,74 L38,88 L46,64 L25,50 L51,50Z" fill="#fff" opacity="0.18"/></svg>`,
+    80: `<svg viewBox="0 0 120 120">
+      <ellipse cx="52" cy="72" rx="14" ry="18" fill="#9ca3af" opacity="0.8"/>
+      <ellipse cx="52" cy="54" rx="14" ry="14" fill="#d1d5db" opacity="0.7"/>
+      <ellipse cx="72" cy="58" rx="12" ry="12" fill="#c0c0c0" opacity="0.85"/>
+      <ellipse cx="68" cy="70" rx="10" ry="10" fill="#e2e8f0" opacity="0.75"/>
+      <text x="60" y="95" text-anchor="middle" fill="#9ca3af" font-size="9">液体金属</text></svg>`,
+    113: `<svg viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="46" fill="none" stroke="#34d399" stroke-width="1.5" opacity="0.5"/>
+      <circle cx="60" cy="60" r="34" fill="none" stroke="#34d399" stroke-width="1" opacity="0.3"/>
+      <text x="60" y="54" text-anchor="middle" font-size="26" fill="#34d399">日</text>
+      <text x="60" y="80" text-anchor="middle" font-size="10" fill="#34d399" letter-spacing="4">NIHON</text></svg>`,
+    92: `<svg viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="28" fill="${c}" opacity="0.12"/>
+      <circle cx="60" cy="60" r="28" fill="none" stroke="${c}" stroke-width="2"/>
+      ${[0,1,2,3,4,5,6].map(i=>`<circle cx="${60+28*Math.cos(i*Math.PI*2/7)}" cy="${60+28*Math.sin(i*Math.PI*2/7)}" r="4" fill="${c}" opacity="0.7"/>`).join('')}
+      <circle cx="60" cy="60" r="8" fill="${c}" opacity="0.6"/>
+      <path d="M40,60 Q60,30 80,60" fill="none" stroke="${c}" stroke-width="1.5" opacity="0.5"/>
+      <path d="M40,60 Q60,90 80,60" fill="none" stroke="${c}" stroke-width="1.5" opacity="0.5"/></svg>`,
+  };
+  if (specials[n]) return specials[n];
+
+  // Generic by category
+  const shapes = {
+    'cat-alkali': `<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="32" fill="${c}" opacity="0.15"/>
+      <circle cx="60" cy="60" r="32" fill="none" stroke="${c}" stroke-width="1.5"/>
+      <circle cx="60" cy="60" r="12" fill="${c}" opacity="0.4"/>
+      <circle cx="60" cy="60" r="5" fill="${c}"/>
+      ${[0,1,2].map(i=>`<circle cx="${60+32*Math.cos(i*2.094)}" cy="${60+32*Math.sin(i*2.094)}" r="5" fill="${c}" opacity="0.7"/>`).join('')}
+      </svg>`,
+    'cat-noble': `<svg viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="40" fill="none" stroke="${c}" stroke-width="1" stroke-dasharray="3 4" opacity="0.6"/>
+      <circle cx="60" cy="60" r="28" fill="none" stroke="${c}" stroke-width="1" stroke-dasharray="2 3" opacity="0.4"/>
+      <circle cx="60" cy="60" r="16" fill="${c}" opacity="0.2"/>
+      <circle cx="60" cy="60" r="7" fill="${c}" opacity="0.8"/></svg>`,
+    'cat-lanthanide': `<svg viewBox="0 0 120 120">
+      ${[0,1,2,3,4,5,6,7].map(i=>`<line x1="60" y1="60" x2="${60+40*Math.cos(i*Math.PI/4)}" y2="${60+40*Math.sin(i*Math.PI/4)}" stroke="${c}" stroke-width="1" opacity="0.4"/>`).join('')}
+      <circle cx="60" cy="60" r="40" fill="none" stroke="${c}" stroke-width="1" opacity="0.3"/>
+      <circle cx="60" cy="60" r="10" fill="${c}" opacity="0.6"/></svg>`,
+  };
+
+  return shapes[cat] || `<svg viewBox="0 0 120 120">
+    <defs><radialGradient id="rg${n}" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="${c}" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="${c}" stop-opacity="0.02"/>
+    </radialGradient></defs>
+    <circle cx="60" cy="60" r="46" fill="url(#rg${n})"/>
+    <circle cx="60" cy="60" r="46" fill="none" stroke="${c}" stroke-width="1.5" opacity="0.5"/>
+    ${[0,1,2].map(i=>`<circle cx="60" cy="60" r="${16+i*12}" fill="none" stroke="${c}" stroke-width="0.8" opacity="${0.28-i*0.07}" stroke-dasharray="${4+i*2} ${3+i}"/>`).join('')}
+    <circle cx="60" cy="60" r="9" fill="${c}" opacity="0.8"/>
+    <text x="60" y="64" text-anchor="middle" fill="#fff" font-size="8" font-weight="bold" opacity="0.9">${sym}</text>
+    </svg>`;
+}
+
+// ── Element Data ──────────────────────────────────────────────
+const C = {
+  al:'cat-alkali', ae:'cat-alkaline', tr:'cat-transition',
+  po:'cat-post', me:'cat-metalloid', nm:'cat-nonmetal',
+  ha:'cat-halogen', no:'cat-noble', la:'cat-lanthanide', ac:'cat-actinide'
+};
+const CATS_JP = {
+  'cat-alkali':'アルカリ金属','cat-alkaline':'アルカリ土類金属','cat-transition':'遷移金属',
+  'cat-post':'後遷移金属','cat-metalloid':'半金属','cat-nonmetal':'非金属',
+  'cat-halogen':'ハロゲン','cat-noble':'希ガス','cat-lanthanide':'ランタノイド','cat-actinide':'アクチノイド'
+};
+
+// state: S=固体 L=液体 G=気体 X=人工
+// tags: 用途タグ
+// [n, sym, ja, en, y, person, loc, mass, cat, gridCol, gridRow, desc, state, tags]
+const RAW = [
+  [1,"H","水素","Hydrogen","1766","キャベンディッシュ","イギリス","1.008",C.nm,1,1,"宇宙で最も豊富な元素。酸素と結合して水を作り、あらゆる生命の基盤となる無色の気体。","G",["エネルギー","生命","宇宙"]],
+  [2,"He","ヘリウム","Helium","1868","ジャンサン/ロッキャー","太陽","4.003",C.no,18,1,"太陽の観測中に発見された希ガス。絶対に燃えない安全なガスで、風船・宇宙船・MRI装置に使われる。","G",["医療","航空","宇宙"]],
+  [3,"Li","リチウム","Lithium","1817","アルフェドソン","スウェーデン","6.941",C.al,1,2,"最も軽い金属元素。スマートフォンや電気自動車のリチウムイオン電池の主役として現代社会を支える。","S",["電池","電子機器","EV"]],
+  [4,"Be","ベリリウム","Beryllium","1798","ヴォークラン","フランス","9.012",C.ae,2,2,"エメラルドの中に潜む硬い金属。X線を通しやすく宇宙望遠鏡の鏡面にも使われる。","S",["宇宙","X線","宝石"]],
+  [5,"B","ホウ素","Boron","1808","ゲイ＝リュサックら","フランス","10.811",C.me,13,2,"耐熱ガラスや半導体ドーピングに使われる多才な半金属。植物の成長にも欠かせない栄養素。","S",["ガラス","半導体","農業"]],
+  [6,"C","炭素","Carbon","古代","不明","世界中","12.011",C.nm,14,2,"鉛筆の芯からダイヤモンドまで。グラフェンや炭素繊維として未来の素材にもなる「命の柱」。","S",["生命","素材","ダイヤモンド"]],
+  [7,"N","窒素","Nitrogen","1772","ラザフォード","イギリス","14.007",C.nm,15,2,"大気の78%を占める。液体窒素として食品冷却・医療・半導体製造に、肥料の原料としても必須。","G",["農業","医療","食品"]],
+  [8,"O","酸素","Oxygen","1774","プリーストリー","イギリス","15.999",C.nm,16,2,"生命の呼吸を支え燃焼を助ける。地球の大気・海水・地殻に最も豊富に存在する命の元素。","G",["生命","医療","燃焼"]],
+  [9,"F","フッ素","Fluorine","1886","モアッサン","フランス","18.998",C.ha,17,2,"最強の酸化力を持つ反応性ナンバーワンの元素。歯磨き粉・フライパンのコーティング・半導体エッチングに。","G",["医療","調理","半導体"]],
+  [10,"Ne","ネオン","Neon","1898","ラムゼー","イギリス","20.180",C.no,18,2,"放電すると鮮やかな赤橙色に輝く希ガス。夜の街を彩るネオンサインの正体。","G",["照明","看板","レーザー"]],
+  [11,"Na","ナトリウム","Sodium","1807","デービー","イギリス","22.990",C.al,1,3,"食塩の成分。神経信号の伝達と体液バランスを制御する、生命維持に不可欠な金属。","S",["食品","医療","生命"]],
+  [12,"Mg","マグネシウム","Magnesium","1755","ブラック","イギリス","24.305",C.ae,2,3,"軽量で強靭な銀白色の金属。スマホ・カメラ・航空機部品を支え、葉緑素の中心にも。","S",["航空","電子機器","農業"]],
+  [13,"Al","アルミニウム","Aluminium","1825","エルステッド","デンマーク","26.982",C.po,13,3,"軽くて錆びにくい万能金属。缶・電線・航空機からスマホのボディまで、世界中で大活躍。","S",["航空","建設","リサイクル"]],
+  [14,"Si","ケイ素","Silicon","1823","ベルセリウス","スウェーデン","28.086",C.me,14,3,"砂・岩の主成分でありながら、半導体チップとして現代のデジタル革命を担う二刀流の元素。","S",["半導体","電子機器","太陽電池"]],
+  [15,"P","リン","Phosphorus","1669","ブラント","ドイツ","30.974",C.nm,15,3,"骨・歯・DNA・ATPの構成要素。生命エネルギーを運ぶATPを作り、マッチにも使われる。","S",["生命","農業","医療"]],
+  [16,"S","硫黄","Sulfur","古代","不明","世界中","32.065",C.nm,16,3,"黄色の結晶で温泉の香りの正体。火薬・ゴムの加硫・硫酸製造に使われる古来からの元素。","S",["化学","農業","温泉"]],
+  [17,"Cl","塩素","Chlorine","1774","シェーレ","スウェーデン","35.453",C.ha,17,3,"プールの消毒で有名。水道水を安全に保ち、PVCプラスチックや漂白剤の原料でもある。","G",["消毒","化学","水処理"]],
+  [18,"Ar","アルゴン","Argon","1894","レイリー卿","イギリス","39.948",C.no,18,3,"空気中3番目に多い希ガス。反応しない性質を活かし溶接シールドや電球に静かに働く。","G",["溶接","照明","保存"]],
+  [19,"K","カリウム","Potassium","1807","デービー","イギリス","39.098",C.al,1,4,"バナナに豊富な必須ミネラル。心臓の拍動・神経信号・筋肉収縮を精密に制御する。","S",["食品","医療","農業"]],
+  [20,"Ca","カルシウム","Calcium","1808","デービー","イギリス","40.078",C.ae,2,4,"骨と歯の主成分。牛乳を白く見せ、筋肉収縮や神経伝達にも関わる生命の礎。","S",["医療","食品","建設"]],
+  [21,"Sc","スカンジウム","Scandium","1879","ニルソン","スウェーデン","44.956",C.tr,3,4,"軽量高強度合金の添加材として野球バットや航空機に使われる希少な銀白色金属。","S",["スポーツ","航空","合金"]],
+  [22,"Ti","チタン","Titanium","1791","グレゴール","イギリス","47.867",C.tr,4,4,"軽くて強く錆びない夢の金属。医療インプラント・航空宇宙・スポーツ用品のスーパーメタル。","S",["医療","航空","スポーツ"]],
+  [23,"V","バナジウム","Vanadium","1830","セフストレーム","スウェーデン","50.942",C.tr,5,4,"鋼鉄を大幅に強化するレアメタル。刃物・工具鋼・大型蓄電池の電解液として活躍。","S",["工具","電池","合金"]],
+  [24,"Cr","クロム","Chromium","1798","ヴォークラン","フランス","51.996",C.tr,6,4,"美しい銀色光沢と高い耐食性。ステンレス鋼の主成分として鉄の錆を防ぎ続ける。","S",["建設","自動車","メッキ"]],
+  [25,"Mn","マンガン","Manganese","1774","ガーン","スウェーデン","54.938",C.tr,7,4,"鉄鋼生産に不可欠な金属。乾電池の電極材料として身近に存在し、脳機能にも関わる。","S",["電池","鉄鋼","電子機器"]],
+  [26,"Fe","鉄","Iron","古代","不明","世界中","55.845",C.tr,8,4,"文明を支える金属の王。血液のヘモグロビンが酸素を運べるのも鉄のイオンのおかげ。","S",["建設","生命","歴史"]],
+  [27,"Co","コバルト","Cobalt","1735","ブラント","スウェーデン","58.933",C.tr,9,4,"美しい青の顔料として古来から愛用。リチウムイオン電池の正極材として現代に欠かせない。","S",["電池","顔料","磁石"]],
+  [28,"Ni","ニッケル","Nickel","1751","クロンステット","スウェーデン","58.693",C.tr,10,4,"耐食性と磁性を兼ね備えた金属。硬貨・電池・ステンレス鋼・磁気素材に大活躍。","S",["通貨","電池","磁石"]],
+  [29,"Cu","銅","Copper","古代","不明","世界中","63.546",C.tr,11,4,"高い電気伝導率を持つ赤い金属。電線・電子機器・10円玉として社会の血管を流れる。","S",["電気","通貨","建設"]],
+  [30,"Zn","亜鉛","Zinc","1746","マルグラーフ","ドイツ","65.38",C.tr,12,4,"鉄の錆を防ぐメッキ材料。免疫機能・傷の回復・精子生成を支える必須ミネラルでもある。","S",["メッキ","医療","電池"]],
+  [31,"Ga","ガリウム","Gallium","1875","ルコック","フランス","69.723",C.po,13,4,"融点29℃で手のひらで溶ける不思議な金属。LEDや太陽電池・半導体素子の重要材料。","S",["LED","半導体","太陽電池"]],
+  [32,"Ge","ゲルマニウム","Germanium","1886","ウィンクラー","ドイツ","72.630",C.me,14,4,"メンデレーフが存在を予言した半金属。光ファイバーの伝送路や赤外線カメラのレンズに。","S",["光通信","半導体","光学"]],
+  [33,"As","ヒ素","Arsenic","1250頃","アルベルトゥス","ドイツ","74.922",C.me,15,4,"毒性で知られるが半導体・農薬・医薬品として重要。自然界の岩石や温泉水にも含まれる。","S",["半導体","医薬","農業"]],
+  [34,"Se","セレン","Selenium","1817","ベルセリウス","スウェーデン","78.971",C.nm,16,4,"光に反応する光電効果を持ち、複写機ドラム・太陽電池・ガラスの着色に使われる。","S",["太陽電池","光学","半導体"]],
+  [35,"Br","臭素","Bromine","1826","バラール","フランス","79.904",C.ha,17,4,"常温で液体の赤褐色ハロゲン。難燃剤・写真フィルムの感光材・医薬品合成に活躍。","L",["難燃","医薬","写真"]],
+  [36,"Kr","クリプトン","Krypton","1898","ラムゼー","イギリス","83.798",C.no,18,4,"放電すると白色に輝く希ガス。高輝度ランプやメートル原器の定義にかつて使われた。","G",["照明","計測","レーザー"]],
+  [37,"Rb","ルビジウム","Rubidium","1861","ブンゼン","ドイツ","85.468",C.al,1,5,"炎色反応で美しい赤紫色を示す柔らかい金属。世界で最も精確な原子時計の心臓部。","S",["時計","光学","通信"]],
+  [38,"Sr","ストロンチウム","Strontium","1790","クロフォード","スコットランド","87.62",C.ae,2,5,"花火を真紅に輝かせる金属。骨に蓄積する性質から骨粗しょう症の治療薬にも応用。","S",["花火","医療","光学"]],
+  [39,"Y","イットリウム","Yttrium","1794","ガドリン","フィンランド","88.906",C.tr,3,5,"スウェーデンの村名に由来する希少金属。LED蛍光体・超伝導体・レーザー結晶に使われる。","S",["LED","超伝導","レーザー"]],
+  [40,"Zr","ジルコニウム","Zirconium","1789","クラプロート","ドイツ","91.224",C.tr,4,5,"融点高く耐食性に優れ、人工ジルコンとして宝石にもなる。原子炉燃料被覆材に必須。","S",["原子炉","宝石","耐熱"]],
+  [41,"Nb","ニオブ","Niobium","1801","ハチェット","イギリス","92.906",C.tr,5,5,"超伝導体の素材として粒子加速器や磁気浮上列車（リニア）の超伝導コイルに応用。","S",["超伝導","リニア","加速器"]],
+  [42,"Mo","モリブデン","Molybdenum","1778","シェーレ","スウェーデン","95.96",C.tr,6,5,"融点が非常に高い難融性金属。特殊鋼の強化材として刃物・ドリル・工具鋼を支える。","S",["工具","耐熱","合金"]],
+  [43,"Tc","テクネチウム","Technetium","1937","ペリエ","イタリア","(98)",C.tr,7,5,"人工的に作られた最初の元素。医療の核医学でガンマ線を放出し癌の早期診断に使われる。","X",["医療","核医学","診断"]],
+  [44,"Ru","ルテニウム","Ruthenium","1844","クラウス","ロシア","101.07",C.tr,8,5,"白金族の希少元素。色素増感型太陽電池・水素製造触媒・ハードディスクのコーティングに。","S",["太陽電池","触媒","記録媒体"]],
+  [45,"Rh","ロジウム","Rhodium","1803","ウォラストン","イギリス","102.91",C.tr,9,5,"自動車排気ガス触媒コンバータに必須の白金族元素。時価は金の数十倍の超高級貴金属。","S",["触媒","自動車","貴金属"]],
+  [46,"Pd","パラジウム","Palladium","1803","ウォラストン","イギリス","106.42",C.tr,10,5,"水素を大量に吸収する不思議な性質。触媒コンバータ・歯科合金・水素貯蔵材料として活躍。","S",["触媒","歯科","水素"]],
+  [47,"Ag","銀","Silver","古代","不明","世界中","107.87",C.tr,11,5,"全元素中最高の電気・熱伝導率を誇る白く輝く貴金属。殺菌力もあり、鏡・写真・宝飾に輝く。","S",["電気","宝飾","医療"]],
+  [48,"Cd","カドミウム","Cadmium","1817","シュトロマイヤー","ドイツ","112.41",C.tr,12,5,"鮮やかな黄・橙・赤の顔料として芸術に貢献した金属。有毒だがニッカド電池にも使われた。","S",["顔料","電池","光学"]],
+  [49,"In","インジウム","Indium","1863","ライヒ","ドイツ","114.82",C.po,13,5,"スマホのタッチパネルに使われるITO（インジウムスズ酸化物）の主原料となる希少金属。","S",["スマホ","ディスプレイ","半導体"]],
+  [50,"Sn","スズ","Tin","古代","不明","世界中","118.71",C.po,14,5,"青銅器時代から使われた金属。缶詰コーティング・電子基板のハンダ・楽器（パイプオルガン）に。","S",["電子機器","食品","歴史"]],
+  [51,"Sb","アンチモン","Antimony","古代","不明","世界中","121.76",C.me,15,5,"古代から化粧品に使われた半金属。鉛と合金にして蓄電池の極板や活字金属に使われる。","S",["電池","化粧品","合金"]],
+  [52,"Te","テルル","Tellurium","1782","ミュラー","ルーマニア","127.60",C.me,16,5,"地殻中に極めて少ない希少元素。CdTe薄膜太陽電池・相変化メモリ（DVD-RAM）の材料に。","S",["太陽電池","記録媒体","半導体"]],
+  [53,"I","ヨウ素","Iodine","1811","クールトワ","フランス","126.90",C.ha,17,5,"甲状腺ホルモンの原料。傷口の消毒薬・X線造影剤・海藻に豊富な人体必須の元素。","S",["医療","食品","消毒"]],
+  [54,"Xe","キセノン","Xenon","1898","ラムゼー","イギリス","131.29",C.no,18,5,"美しい青白色の光を放つ希ガス。自動車HIDランプ・麻酔薬・宇宙探査機のイオンエンジンに。","G",["照明","医療","宇宙"]],
+  [55,"Cs","セシウム","Cesium","1860","ブンゼン","ドイツ","132.91",C.al,1,6,"炎色反応で青色を示す軟らかい金属。世界最精確な原子時計の基準として1秒を定義する。","S",["時計","通信","光学"]],
+  [56,"Ba","バリウム","Barium","1808","デービー","イギリス","137.33",C.ae,2,6,"消化管X線検査の造影剤として医療に貢献。花火を美しい緑色に輝かせる金属でもある。","S",["医療","花火","X線"]],
+  [57,"La","ランタン","Lanthanum","1839","モサンデル","スウェーデン","138.91",C.la,3,6,"高屈折率のカメラレンズ・ニッケル水素電池の水素吸蔵合金に使われるランタノイドの先頭。","S",["光学","電池","触媒"]],
+  [58,"Ce","セリウム","Cerium","1803","ベルセリウス","スウェーデン","140.12",C.la,4,6,"最も豊富なランタノイド。ガラス研磨剤・自動車排気触媒・UV吸収ガラスに使われる。","S",["触媒","光学","研磨"]],
+  [59,"Pr","プラセオジム","Praseodymium","1885","アウアー","オーストリア","140.91",C.la,5,6,"強力なNdFeB磁石の成分。溶接ゴーグルのガラス着色や航空機エンジン部品合金に。","S",["磁石","光学","航空"]],
+  [60,"Nd","ネオジム","Neodymium","1885","アウアー","オーストリア","144.24",C.la,6,6,"世界最強の永久磁石（NdFeB）の主成分。電気自動車・風力発電・ハードディスクの原動力。","S",["磁石","EV","再生可能エネルギー"]],
+  [61,"Pm","プロメチウム","Promethium","1945","マリンスキー","アメリカ","(145)",C.la,7,6,"自然界にほぼ存在しない人工放射性元素。核電池の電力源として宇宙探査に使われた。","X",["宇宙","核電池","放射線"]],
+  [62,"Sm","サマリウム","Samarium","1879","ルコック","フランス","150.36",C.la,8,6,"SmCo磁石として高温でも磁力を保持。サマリウム放射性同位体は癌治療の放射線療法に。","S",["磁石","医療","核"]],
+  [63,"Eu","ユウロピウム","Europium","1901","ドマルセー","フランス","151.96",C.la,9,6,"赤と青の鮮やかな蛍光を発する希土類元素。紙幣の偽造防止蛍光インクにも使われる。","S",["蛍光","セキュリティ","ディスプレイ"]],
+  [64,"Gd","ガドリニウム","Gadolinium","1880","マリニャク","スイス","157.25",C.la,10,6,"MRI造影剤として医療診断に使われる磁性元素。中性子を最もよく吸収する元素でもある。","S",["医療","MRI","原子炉"]],
+  [65,"Tb","テルビウム","Terbium","1843","モサンデル","スウェーデン","158.93",C.la,11,6,"緑色蛍光体の発光源として省エネ蛍光灯・液晶ディスプレイのバックライトに使われる。","S",["蛍光","ディスプレイ","照明"]],
+  [66,"Dy","ジスプロシウム","Dysprosium","1886","ルコック","フランス","162.50",C.la,12,6,"「近づきがたい」の意味を持つ名。高温でもネオジム磁石の性能を維持させる不可欠な元素。","S",["磁石","EV","再生可能エネルギー"]],
+  [67,"Ho","ホルミウム","Holmium","1878","クレーベ","スウェーデン","164.93",C.la,13,6,"最強の磁気モーメントを持つ元素。固体レーザー（Ho:YAG）・磁気研究・核反応炉に使われる。","S",["レーザー","医療","磁石"]],
+  [68,"Er","エルビウム","Erbium","1842","モサンデル","スウェーデン","167.26",C.la,14,6,"1.55μmの光を増幅する性質から、光ファイバー通信の中継増幅器に絶対不可欠な元素。","S",["光通信","レーザー","通信"]],
+  [69,"Tm","ツリウム","Thulium","1879","クレーベ","スウェーデン","168.93",C.la,15,6,"希少なランタノイドで青色蛍光体・ポータブルX線源・高輝度レーザーとして使われる。","S",["蛍光","医療","レーザー"]],
+  [70,"Yb","イッテルビウム","Ytterbium","1878","マリニャク","スイス","173.04",C.la,16,6,"光格子時計の超精密基準に使われる。太陽電池の効率向上・ファイバーレーザーにも応用。","S",["時計","太陽電池","レーザー"]],
+  [71,"Lu","ルテチウム","Lutetium","1907","ユルバン","フランス","174.97",C.la,17,6,"ランタノイド最後の元素。PETスキャン検出器（Lu₂SiO₅:Ce）・石油精製触媒として活躍。","S",["医療","PET","触媒"]],
+  [72,"Hf","ハフニウム","Hafnium","1923","コスター","デンマーク","178.49",C.tr,4,6,"ジルコニウムに酷似するが中性子を強く吸収する。原子炉制御棒・半導体ゲート絶縁膜に。","S",["原子炉","半導体","合金"]],
+  [73,"Ta","タンタル","Tantalum","1802","エケベリ","スウェーデン","180.95",C.tr,5,6,"耐食性が極めて高い難融性金属。スマホの小型コンデンサ・手術器具・航空機エンジンに。","S",["スマホ","医療","航空"]],
+  [74,"W","タングステン","Tungsten","1783","エルウヤール兄弟","スペイン","183.84",C.tr,6,6,"全元素中最高の融点3422℃を誇る。白熱電球のフィラメント・X線管・超硬工具の王者。","S",["照明","工具","耐熱"]],
+  [75,"Re","レニウム","Rhenium","1925","ノダック","ドイツ","186.21",C.tr,7,6,"最後から2番目に発見された安定元素。ジェットエンジン超高温タービンブレードの要。","S",["航空","耐熱","合金"]],
+  [76,"Os","オスミウム","Osmium","1803","テナント","イギリス","190.23",C.tr,8,6,"全元素中最大の密度22.59g/cm³を誇る。万年筆のペン先・電気接点・触媒として使われる。","S",["文具","電子機器","触媒"]],
+  [77,"Ir","イリジウム","Iridium","1803","テナント","イギリス","192.22",C.tr,9,6,"耐腐食性が最も高い金属。6600万年前の大量絶滅の証拠となった地層（K-Pg境界）に存在。","S",["貴金属","耐食","歴史"]],
+  [78,"Pt","白金","Platinum","1748","ウジョア","コロンビア","195.08",C.tr,10,6,"永遠に輝く貴金属。触媒コンバータ・燃料電池・宝飾品・がん治療薬シスプラチンの素材。","S",["触媒","医療","宝飾"]],
+  [79,"Au","金","Gold","古代","不明","世界中","196.97",C.tr,11,6,"永遠に錆びない絶対王者の輝き。精密電子基板・宇宙服のバイザー・芸術品に価値は不変。","S",["電子機器","宝飾","通貨"]],
+  [80,"Hg","水銀","Mercury","古代","不明","世界中","200.59",C.tr,12,6,"常温で液体の唯一の金属。かつて体温計・蛍光灯に使われた不思議な銀色の滴。","L",["医療","照明","計測"]],
+  [81,"Tl","タリウム","Thallium","1861","クルックス","イギリス","204.38",C.po,13,6,"緑色炎色反応で発見された毒性の高い金属。赤外線光学素子・半導体・超伝導体に応用。","S",["光学","半導体","超伝導"]],
+  [82,"Pb","鉛","Lead","古代","不明","世界中","207.2",C.po,14,6,"古代ローマから使われてきた重い金属。放射線シールド・鉛蓄電池の極板・釣り錘に活躍。","S",["放射線","電池","歴史"]],
+  [83,"Bi","ビスマス","Bismuth","1753","ジョフロワ","フランス","208.98",C.po,15,6,"虹色に輝く酸化膜が美しい重金属。胃薬・低融点合金・鉛フリーハンダの代替材として。","S",["医薬","電子機器","美術"]],
+  [84,"Po","ポロニウム","Polonium","1898","キュリー夫妻","フランス","(209)",C.me,16,6,"マリー・キュリーが祖国ポーランドに捧げた名の放射性元素。静電除去デバイスに使われる。","X",["放射線","静電","歴史"]],
+  [85,"At","アスタチン","Astatine","1940","コーソン","アメリカ","(210)",C.ha,17,6,"地球上に最も少ない天然元素（約30g以下）。がんの標的アルファ線治療に期待される。","X",["医療","放射線","希少"]],
+  [86,"Rn","ラドン","Radon","1900","ドルン","ドイツ","(222)",C.no,18,6,"放射性の希ガス。地盤から自然湧出し建物内に蓄積することがある。温泉ラドンも有名。","G",["温泉","放射線","地質"]],
+  [87,"Fr","フランシウム","Francium","1939","ペレー","フランス","(223)",C.al,1,7,"女性科学者が発見した唯一の元素。極めて不安定で地球上に存在量は数十グラム以下。","X",["希少","放射線","研究"]],
+  [88,"Ra","ラジウム","Radium","1898","キュリー夫妻","フランス","(226)",C.ae,2,7,"マリー・キュリーが発見した強放射性元素。かつて夜光塗料に使われ暗闇で輝いた。","X",["放射線","医療","歴史"]],
+  [89,"Ac","アクチニウム","Actinium","1899","ドビエルヌ","フランス","(227)",C.ac,3,7,"暗闇で青白く光る放射性元素。アクチノイド系列の先頭として核科学の入口となる。","X",["放射線","医療","研究"]],
+  [90,"Th","トリウム","Thorium","1829","ベルセリウス","スウェーデン","232.04",C.ac,4,7,"次世代核燃料として注目される放射性元素。かつてガスマントルを明るく輝かせた。","S",["核燃料","エネルギー","照明"]],
+  [91,"Pa","プロトアクチニウム","Protactinium","1913","ファヤンス","ドイツ","231.04",C.ac,5,7,"ウランの崩壊で生成される稀少な放射性金属。海洋堆積物の年代測定に使われる。","X",["放射線","年代測定","研究"]],
+  [92,"U","ウラン","Uranium","1789","クラプロート","ドイツ","238.03",C.ac,6,7,"原子力エネルギーの源。核分裂連鎖反応で膨大なエネルギーを生む、原子時代の象徴。","S",["核燃料","エネルギー","歴史"]],
+  [93,"Np","ネプツニウム","Neptunium","1940","マクミラン","アメリカ","(237)",C.ac,7,7,"海王星にちなんで命名。ウランに中性子を当てて合成された最初の超ウラン元素。","X",["核","宇宙","研究"]],
+  [94,"Pu","プルトニウム","Plutonium","1940","シーボーグ","アメリカ","(244)",C.ac,8,7,"冥王星にちなんで命名。核兵器と原子力発電の燃料として20世紀の歴史を変えた元素。","X",["核燃料","エネルギー","歴史"]],
+  [95,"Am","アメリシウム","Americium","1944","シーボーグ","アメリカ","(243)",C.ac,9,7,"アメリカ大陸にちなんで命名。家庭用煙感知器のイオン化センサーとして日常に潜む。","X",["安全","放射線","日常"]],
+  [96,"Cm","キュリウム","Curium","1944","シーボーグ","アメリカ","(247)",C.ac,10,7,"マリー＆ピエール・キュリー夫妻に捧げた元素。宇宙探査機の原子力電池にも使われた。","X",["宇宙","核電池","放射線"]],
+  [97,"Bk","バークリウム","Berkelium","1949","トンプソン","アメリカ","(247)",C.ac,11,7,"バークレー市にちなんで命名。超ウラン元素研究の連鎖の中間生成物として合成される。","X",["研究","核","希少"]],
+  [98,"Cf","カリホルニウム","Californium","1950","シーボーグ","アメリカ","(251)",C.ac,12,7,"カリフォルニア州にちなんで命名。強力な中性子源として金属探知・油田調査・医療に。","X",["医療","探知","研究"]],
+  [99,"Es","アインスタイニウム","Einsteinium","1952","ギオルソ","アメリカ","(252)",C.ac,13,7,"水爆実験（アイビー・マイク）の残骸から発見。アインシュタインに捧げられた超重元素。","X",["核","研究","歴史"]],
+  [100,"Fm","フェルミウム","Fermium","1952","ギオルソ","アメリカ","(257)",C.ac,14,7,"核物理学者エンリコ・フェルミに捧げた元素。熱核爆発の降下物から初めて発見された。","X",["核","研究","歴史"]],
+  [101,"Md","メンデレビウム","Mendelevium","1955","シーボーグ","アメリカ","(258)",C.ac,15,7,"周期表の父メンデレーフに捧げた元素。アインスタイニウムにアルファ粒子を照射して合成。","X",["核","研究","歴史"]],
+  [102,"No","ノーベリウム","Nobelium","1966","フレーロフ","ソ連","(259)",C.ac,16,7,"アルフレッド・ノーベルに捧げられた超ウラン元素。半減期が極めて短く研究が困難。","X",["核","研究","希少"]],
+  [103,"Lr","ローレンシウム","Lawrencium","1961","ギオルソ","アメリカ","(266)",C.ac,17,7,"サイクロトロン発明者ローレンスに捧げた。アクチノイド系列最後の元素として周期表の節目。","X",["核","研究","歴史"]],
+  [104,"Rf","ラザホージウム","Rutherfordium","1969","フレーロフ","ソ連","(267)",C.tr,4,7,"原子核物理学の父ラザフォードに捧げた超重元素。半減期は数秒で研究には高度な技術が必要。","X",["核","研究","超重元素"]],
+  [105,"Db","ドブニウム","Dubnium","1970","フレーロフ","ソ連","(268)",C.tr,5,7,"ロシアのドゥブナ核研究所にちなんで命名。アメリシウムにネオン核を衝突させて生成。","X",["核","研究","超重元素"]],
+  [106,"Sg","シーボーギウム","Seaborgium","1974","ギオルソ","アメリカ","(271)",C.tr,6,7,"元素発見に最も貢献したシーボーグ博士に捧げた唯一、本人生存中に命名された元素。","X",["核","研究","超重元素"]],
+  [107,"Bh","ボーリウム","Bohrium","1981","ミュンツェンベルク","ドイツ","(272)",C.tr,7,7,"量子論の父ニールス・ボーアに捧げた超重元素。ドイツのGSIで合成に成功。","X",["核","研究","超重元素"]],
+  [108,"Hs","ハッシウム","Hassium","1984","アルムブルスター","ドイツ","(277)",C.tr,8,7,"ドイツの州ヘッセン（Hassia）にちなんで命名。鉛ターゲットに鉄イオンを衝突させて合成。","X",["核","研究","超重元素"]],
+  [109,"Mt","マイトネリウム","Meitnerium","1982","ミュンツェンベルク","ドイツ","(278)",C.tr,9,7,"核分裂を理論化した女性物理学者リーゼ・マイトナーに捧げた、科学への正義の命名。","X",["核","研究","超重元素"]],
+  [110,"Ds","ダームスタチウム","Darmstadtium","1994","ホフマン","ドイツ","(281)",C.tr,10,7,"GSI研究所所在地ダルムシュタットにちなんで命名。ニッケル同士の衝突で生成した超重元素。","X",["核","研究","超重元素"]],
+  [111,"Rg","レントゲニウム","Roentgenium","1994","ホフマン","ドイツ","(282)",C.tr,11,7,"X線を発見したレントゲン博士に捧げた超重元素。金のビームをニッケルに照射して合成。","X",["核","研究","超重元素"]],
+  [112,"Cn","コペルニシウム","Copernicium","1996","ホフマン","ドイツ","(285)",C.tr,12,7,"地動説のコペルニクスに捧げた超重元素。常温でガス状の可能性がある最重金属候補。","X",["核","研究","超重元素"]],
+  [113,"Nh","ニホニウム","Nihonium","2004","森田浩介ら","日本（理研）","(286)",C.po,13,7,"アジア初、日本生まれの元素。理化学研究所が亜鉛ビームをビスマスに衝突させて合成した誇り。","X",["日本","核","研究"]],
+  [114,"Fl","フレロビウム","Flerovium","1999","オガネシアン","ロシア","(289)",C.po,14,7,"フレーロフ核反応研究所にちなんで命名。重い元素ながら揮発性が高い謎めいた超重元素。","X",["核","研究","超重元素"]],
+  [115,"Mc","モスコビウム","Moscovium","2003","オガネシアン","ロシア","(290)",C.po,15,7,"ロシアの首都モスクワにちなんで命名。カルシウムビームをアメリシウムに照射して合成。","X",["核","研究","超重元素"]],
+  [116,"Lv","リバモリウム","Livermorium","2000","オガネシアン","ロシア/米国","(293)",C.po,16,7,"カリフォルニア州リバモア国立研究所にちなんで命名。半減期はわずか61ミリ秒の超重元素。","X",["核","研究","超重元素"]],
+  [117,"Ts","テネシン","Tennessine","2010","オガネシアン","ロシア/米国","(294)",C.ha,17,7,"アメリカのテネシー州にちなんで命名。わずか数十ミリ秒しか存在できないハロゲン族末尾。","X",["核","研究","超重元素"]],
+  [118,"Og","オガネソン","Oganesson","2002","オガネシアン","ロシア/米国","(294)",C.no,18,7,"発見者ユーリ・オガネシアン博士に捧げた周期表の現在の最後の元素。超重希ガス元素。","X",["核","研究","超重元素"]],
+];
+
+const elements = RAW.map(r => ({
+  n:r[0], s:r[1], ja:r[2], en:r[3], y:r[4], p:r[5], l:r[6], m:r[7],
+  cat:r[8], x:r[9], r:r[10], d:r[11], state:r[12], tags:r[13]
+}));
+
+const STATE_INFO = {
+  'S': { label:'固体', cls:'state-solid' },
+  'L': { label:'液体', cls:'state-liquid' },
+  'G': { label:'気体', cls:'state-gas' },
+  'X': { label:'人工/放射性', cls:'state-syn' },
+};
+
+// ── Today's Element ───────────────────────────────────────────
+const todayEl = elements[new Date().getDate() % elements.length];
+document.getElementById('today-sym').textContent = todayEl.s;
+document.getElementById('today-name').textContent = todayEl.ja;
+document.getElementById('today-en').textContent = todayEl.en;
+document.getElementById('today-sym').style.color = CAT_COLORS[todayEl.cat];
+function openTodayElement() { openModal(todayEl); }
+
+// ── Theme toggle ──────────────────────────────────────────────
+function toggleTheme() { document.body.classList.toggle('light'); }
+
+// ── Build Legend + Filter buttons ────────────────────────────
+const LEGENDS = [
+  {cat:'cat-alkali',label:'アルカリ金属'},
+  {cat:'cat-alkaline',label:'アルカリ土類'},
+  {cat:'cat-transition',label:'遷移金属'},
+  {cat:'cat-post',label:'後遷移金属'},
+  {cat:'cat-metalloid',label:'半金属'},
+  {cat:'cat-nonmetal',label:'非金属'},
+  {cat:'cat-halogen',label:'ハロゲン'},
+  {cat:'cat-noble',label:'希ガス'},
+  {cat:'cat-lanthanide',label:'ランタノイド'},
+  {cat:'cat-actinide',label:'アクチノイド'},
+];
+const legendEl = document.getElementById('legend');
+LEGENDS.forEach(l => {
+  const c = CAT_COLORS[l.cat];
+  legendEl.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${c}"></div>${l.label}</div>`;
+});
+const catFilters = document.getElementById('catFilters');
+LEGENDS.forEach(l => {
+  const c = CAT_COLORS[l.cat];
+  const btn = document.createElement('button');
+  btn.className = 'filter-btn';
+  btn.dataset.cat = l.cat;
+  btn.textContent = l.label;
+  btn.style.borderColor = c + '66';
+  btn.style.color = c;
+  btn.onclick = function() { setFilter(l.cat, this); };
+  catFilters.appendChild(btn);
+});
+
+let currentFilter = 'all';
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) { btn.classList.add('active'); btn.style.background = ''; }
+  document.querySelectorAll('.el:not(.empty)').forEach(el => {
+    if (cat === 'all' || el.dataset.cat === cat) {
+      el.classList.remove('dimmed');
+    } else {
+      el.classList.add('dimmed');
+    }
+  });
+}
+
+// ── Search ────────────────────────────────────────────────────
+function doSearch(q) {
+  q = q.trim().toLowerCase();
+  document.querySelectorAll('.el:not(.empty)').forEach(el => {
+    if (!q) { el.classList.remove('dimmed'); return; }
+    const n = el.dataset.n;
+    const found = elements.find(e => e.n === +n);
+    if (!found) { el.classList.add('dimmed'); return; }
+    const match = found.ja.toLowerCase().includes(q) ||
+                  found.en.toLowerCase().includes(q) ||
+                  found.s.toLowerCase().includes(q) ||
+                  String(found.n).includes(q);
+    el.classList.toggle('dimmed', !match);
+  });
+}
+
+// ── Build Period Labels ───────────────────────────────────────
+const periodLabels = document.getElementById('periodLabels');
+for (let i = 1; i <= 7; i++) {
+  const div = document.createElement('div');
+  div.className = 'period-label';
+  div.textContent = `${i}`;
+  periodLabels.appendChild(div);
+}
+
+// ── Build Table ───────────────────────────────────────────────
+const table = document.getElementById('table');
+table.style.gridTemplateRows = 'repeat(10,56px) 12px repeat(2,56px)';
+
+function makeEl(elData, col, row) {
+  const div = document.createElement('div');
+  if (elData) {
+    div.className = `el ${elData.cat}`;
+    div.dataset.cat = elData.cat;
+    div.dataset.n = elData.n;
+    div.innerHTML = `<span class="num">${elData.n}</span><span class="sym">${elData.s}</span><div class="tooltip">${elData.ja} / ${elData.en}</div>`;
+    div.style.gridColumn = col;
+    div.style.gridRow = row;
+    div.onclick = () => openModal(elData);
+    // Pulse animation on hover area elements
+    if (elData.n === todayEl.n) div.classList.add('pulse-anim');
+  } else {
+    div.className = 'el empty';
+    div.style.gridColumn = col;
+    div.style.gridRow = row;
+  }
+  return div;
+}
+
+// Main grid rows 1-7
+for (let row = 1; row <= 7; row++) {
+  for (let col = 1; col <= 18; col++) {
+    const el = elements.find(e => e.x === col && e.r === row);
+    table.appendChild(makeEl(el, col, row));
+  }
+}
+
+// Row 8: blank spacer
+for (let col = 1; col <= 18; col++) {
+  const div = document.createElement('div');
+  div.style.gridColumn = col;
+  div.style.gridRow = 8;
+  table.appendChild(div);
+}
+
+// Row 9: separator label
+const lanLabel = document.createElement('div');
+lanLabel.style.cssText = 'grid-column:1/19;grid-row:9;display:flex;align-items:center;justify-content:center;font-size:0.6em;color:#64748b;letter-spacing:2px;';
+lanLabel.textContent = '─── ランタノイド ────────────────────────────────── アクチノイド ───';
+table.appendChild(lanLabel);
+
+// Row 10: Lanthanides 57-71
+const lans = elements.filter(e => e.n>=57 && e.n<=71).sort((a,b)=>a.n-b.n);
+lans.forEach((el,i) => table.appendChild(makeEl(el, 3+i, 10)));
+
+// Row 11: Actinides 89-103
+const acts = elements.filter(e => e.n>=89 && e.n<=103).sort((a,b)=>a.n-b.n);
+acts.forEach((el,i) => table.appendChild(makeEl(el, 3+i, 11)));
+
+// ── Modal ─────────────────────────────────────────────────────
+let currentElN = 1;
+
+function openModal(data) {
+  currentElN = data.n;
+  playClick(1000, 500);
+  // Stop top BGM, play category music
+  stopTopMusic();
+  setTimeout(() => playCategoryMusic(data.cat), 180);
+
+  document.getElementById('m-num').textContent = `原子番号 No.${data.n}`;
+  document.getElementById('m-sym').textContent = data.s;
+  document.getElementById('m-name-ja').textContent = data.ja;
+  document.getElementById('m-name-en').textContent = data.en;
+  document.getElementById('m-year').textContent = data.y + '年';
+  document.getElementById('m-person').textContent = data.p;
+  document.getElementById('m-place').textContent = data.l;
+  document.getElementById('m-mass').textContent = data.m;
+  document.getElementById('m-desc').textContent = data.d;
+
+  // State badge
+  const si = STATE_INFO[data.state] || STATE_INFO['S'];
+  const nameJaEl = document.getElementById('m-name-ja');
+  nameJaEl.innerHTML = data.ja + ` <span class="state-badge ${si.cls}">${si.label}</span>`;
+
+  // Category music label
+  const cfg = CAT_MUSIC[data.cat];
+  document.getElementById('m-music-label').textContent = `♬ ${cfg ? cfg.label : data.en + ' Theme'}`;
+
+  // Category badge
+  const catEl = document.getElementById('m-cat');
+  catEl.textContent = CATS_JP[data.cat] || '';
+  const cc = CAT_COLORS[data.cat] || '#00e5ff';
+  catEl.style.borderColor = cc;
+  catEl.style.color = cc;
+  catEl.style.background = cc + '20';
+
+  // Illustration
+  document.getElementById('m-illust').innerHTML = getIllust(data.n, data.s, data.cat);
+
+  // Tags
+  const tagsEl = document.getElementById('m-tags');
+  tagsEl.innerHTML = (data.tags||[]).map(t=>`<span class="tag">#${t}</span>`).join('');
+
+  // Nav buttons
+  const sortedNs = elements.map(e=>e.n).sort((a,b)=>a-b);
+  const idx = sortedNs.indexOf(data.n);
+  document.getElementById('nav-prev').disabled = idx <= 0;
+  document.getElementById('nav-next').disabled = idx >= sortedNs.length - 1;
+
+  document.getElementById('modal').classList.add('open');
+}
+
+function navElement(dir) {
+  const sortedEls = [...elements].sort((a,b)=>a.n-b.n);
+  const idx = sortedEls.findIndex(e => e.n === currentElN);
+  const next = sortedEls[idx + dir];
+  if (next) openModal(next);
+}
+
+function closeModal() {
+  stopMusic();
+  document.getElementById('modal').classList.remove('open');
+  // Resume top BGM
+  setTimeout(() => playTopBGM(), 400);
+}
+function handleModalBg(e) { if (e.target===document.getElementById('modal')) closeModal(); }
+</script>
+</body>
+</html>
